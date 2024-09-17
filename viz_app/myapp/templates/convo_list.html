@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Conversation List</title>
+</head>
+<body>
+    <h1>Conversation List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Agent</th>
+                <th>Dialogue</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dialogue in dialogues %}
+                <tr>
+                    <td>{{ dialogue.agent.name }}</td>
+                    <td>{{ dialogue.text }}</td>
+                    <td>{{ dialogue.timestamp }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'upload_document' %}">Upload New Document</a>
+</body>
+</html>
