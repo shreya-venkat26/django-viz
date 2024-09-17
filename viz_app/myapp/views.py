@@ -8,7 +8,7 @@ from .models import Agent, Dialogue
 # Create your views here.
 def conversation_list(request):
     dialogues = Dialogue.objects.order_by('timestamp')
-    return render(request, 'conversation_list.html', {'dialogues': dialogues})
+    return render(request, 'convo_list.html', {'dialogues': dialogues})
 
 def upload_document(request):
     if request.method == 'POST':
@@ -16,7 +16,7 @@ def upload_document(request):
         if form.is_valid():
             file = request.FILES['document']
             process_document(file)
-            return HttpResponseRedirect(reverse('conversation_list'))
+            return HttpResponseRedirect(reverse('convo_list'))
     else:
         form = DocumentUploadForm()
     return render(request, 'upload.html', {'form': form})
