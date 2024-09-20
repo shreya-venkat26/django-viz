@@ -2,27 +2,55 @@
 <html>
 <head>
     <title>Conversation List</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .speech-bubble {
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #f0f0f0;
+            display: inline-block;
+            max-width: 400px;
+            word-wrap: break-word;
+        }
+        .speech-bubble:nth-child(even) {
+            background-color: #cce5ff; /* Different color for each bubble */
+        }
+        .speech-bubble:nth-child(odd) {
+            background-color: #d4edda; /* Different color for each bubble */
+        }
+    </style>
 </head>
 <body>
-    <h1>Conversation List</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Agent</th>
-                <th>Dialogue</th>
-                <th>Time</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for dialogue in dialogues %}
-                <tr>
-                    <td>{{ dialogue.agent.name }}</td>
-                    <td>{{ dialogue.text }}</td>
-                    <td>{{ dialogue.timestamp }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <a href="{% url 'upload_document' %}">Upload New Document</a>
+
+<h2>Conversation List</h2>
+
+<table>
+    <tr>
+        <th>Speech Number</th>
+        <th>Dialogue</th>
+        <th>Proper Nouns</th>
+    </tr>
+    {% for dialogue in dialogues %}
+    <tr>
+        <td>{{ dialogue.serial_number }}</td>
+        <td>
+            <div class="speech-bubble">{{ dialogue.text }}</div>
+        </td>
+        <td>{{ dialogue.proper_nouns }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
 </body>
 </html>
