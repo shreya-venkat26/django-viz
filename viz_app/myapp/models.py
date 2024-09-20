@@ -8,9 +8,11 @@ class Agent(models.Model):
         return self.name
 
 class Dialogue(models.Model):
-    agent = models.ForeignKey(Agent, on_delete=models.CASCADE)
+    agent = Agent
+    serial_number = models.IntegerField(default=0)
     text = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(default=None)
+    proper_nouns = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f'{self.agent.name}: {self.text[:50]}...'
+        return f"Speech {self.serial_number}"

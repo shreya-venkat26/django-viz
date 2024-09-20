@@ -49,18 +49,18 @@ def upload_document(request):
 
                     # Create the dialogue entry in the database (no need for agent here)
                     Dialogue.objects.create(
-                        agent=None,  # Optional, since we're focusing on text bubbles
+                        #agent=None, 
+                        serial_number=idx,
                         text=dialogue_text,
                         timestamp=timezone.now(),
-                        serial_number=idx,
                         proper_nouns=", ".join(proper_nouns)
                     )
 
-            return redirect('conversation_list')
+            return redirect('convo_list')
     else:
         form = DocumentUploadForm()
 
-    return render(request, 'upload_document.html', {'form': form})
+    return render(request, 'upload.html', {'form': form})
 
 def conversation_list(request):
     dialogues = Dialogue.objects.all().order_by('serial_number')  # Fetch by order of speech
