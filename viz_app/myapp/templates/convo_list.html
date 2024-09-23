@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Conversation List</title>
+    <title>Conversation for {{ document.name }}</title>
     <style>
         table {
             width: 100%;
@@ -23,34 +23,32 @@
             max-width: 400px;
             word-wrap: break-word;
         }
-        .speech-bubble:nth-child(even) {
-            background-color: #cce5ff; /* Different color for each bubble */
-        }
-        .speech-bubble:nth-child(odd) {
-            background-color: #d4edda; /* Different color for each bubble */
-        }
     </style>
 </head>
 <body>
-
-<h2>Conversation List</h2>
-
-<table>
-    <tr>
-        <th>Speech Number</th>
-        <th>Dialogue</th>
-        <th>Proper Nouns</th>
-    </tr>
-    {% for dialogue in dialogues %}
-    <tr>
-        <td>{{ dialogue.serial_number }}</td>
-        <td>
-            <div class="speech-bubble">{{ dialogue.text }}</div>
-        </td>
-        <td>{{ dialogue.proper_nouns }}</td>
-    </tr>
-    {% endfor %}
-</table>
-
+    <h2>Conversation List for "{{ document.name }}"</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Speech Number</th>
+                <th>Agent</th>
+                <th>Dialogue</th>
+                <th>Proper Nouns</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dialogue in dialogues %}
+            <tr>
+                <td>{{ dialogue.serial_number }}</td>
+                <td>{{ dialogue.agent }}</td>
+                <td>
+                    <div class="speech-bubble">{{ dialogue.text }}</div>
+                </td>
+                <td>{{ dialogue.named_entities }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'document_list' %}">Back to Documents</a>
 </body>
 </html>
