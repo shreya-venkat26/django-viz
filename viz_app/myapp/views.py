@@ -4,49 +4,50 @@ from .models import Document, Dialogue
 from .forms import DocumentUploadForm
 import re
 
-def extract_proper_nouns(text):
-    return re.findall(r'\b[A-Z][a-zA-Z]*\b', text)
-
 def process_document(file, document):
     content = file.read().decode('utf-8')
     
-    # Step 1: Split the content based on separator lines
-    sections = re.split(r'[-]{4,}', content)  # Split on lines of 4 or more dashes
+    sections = re.split(r'[-]{4,}', content)
+    print(f"Total sections found: {len(sections)}")
     
-    dialogue_started = False  # A flag to indicate when to start parsing dialogues
-    for section in sections:
+    for section_idx, section in enumerate(sections):
         section = section.strip()
-        
-        if not section:
+        print(f"Processing section {section_idx + 1}...")
+
+        if not section or 'Next speaker' not in section:
+            print(f"Skipping section {section_idx + 1}, no 'Next speaker' found.")
             continue
         
-        # Step 2: Check if the section contains dialogues (looking for 'Next speaker')
-        if 'Next speaker' in section:
-            dialogue_started = True
+        dialogues = re.split(r'Next speaker:\s*', section, flags=re.IGNORECASE)
         
-        # Step 3: If dialogues started, split by "Next speaker" and parse each dialogue
-        if dialogue_started:
-            dialogues = re.split(r'Next speaker:\s*', section, flags=re.IGNORECASE)
+        for idx, dialogue in enumerate(dialogues):
+            dialogue = dialogue.strip()
             
-            for idx, dialogue in enumerate(dialogues):
-                dialogue = dialogue.strip()
+            # skip empty dialogues
+            if not dialogue:
+                continue
+            
+            # Format 1: 'Next speaker: Hypothesizer'
+            # Format 2: 'Hypothesizer (to chat_manager):'
+            speaker_match = re.search(r"^(?:Next speaker:\s*)?([\w\s]+)(?:\s*\(.*\))?:", dialogue, flags=re.IGNORECASE)
+            if speaker_match:
+                speaker = speaker_match.group(1).strip()
+                dialogue_text = dialogue[len(speaker_match.group(0)):].strip()
+                proper_nouns = extract_proper_nouns(dialogue_text)
                 
-                if dialogue:
-                    # Step 4: Extract the speaker and dialogue text
-                    speaker_match = re.match(r"^([\w\s]+):", dialogue)
-                    if speaker_match:
-                        speaker = speaker_match.group(1).strip()
-                        dialogue_text = dialogue[len(speaker_match.group(0)):].strip()
-                        proper_nouns = extract_proper_nouns(dialogue_text)
-                        
-                        # Step 5: Create a Dialogue entry in the database
-                        Dialogue.objects.create(
-                            document=document,
-                            agent=speaker,
-                            text=dialogue_text,
-                            named_entities=", ".join(proper_nouns),
-                            serial_number=idx + 1
-                        )
+                # Create a Dialogue entry in the database
+                Dialogue.objects.create(
+                    document=document,
+                    agent=speaker,
+                    text=dialogue_text,
+                    named_entities=", ".join(proper_nouns),
+                    serial_number=idx + 1
+                )
+                print(f"Dialogue added: Speaker: {speaker}, Text: {dialogue_text[:30]}...")
+
+# Helper function to extract proper nouns
+def extract_proper_nouns(text):
+    return re.findall(r'\b[A-Z][a-zA-Z]*\b', text)
 
 
 def upload_document(request):
