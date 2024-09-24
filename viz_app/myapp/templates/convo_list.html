@@ -20,9 +20,13 @@
             border-radius: 10px;
             background-color: #f0f0f0;
             display: inline-block;
-            max-width: 400px;
+            width: 80%;
             word-wrap: break-word;
         }
+        .color-1 { background-color: #cfe2f3; }
+        .color-2 { background-color: #f4cccc; }
+        .color-3 { background-color: #d9ead3; }
+        .color-4 { background-color: #fff2cc; }
     </style>
 </head>
 <body>
@@ -42,7 +46,8 @@
                 <td>{{ dialogue.serial_number }}</td>
                 <td>{{ dialogue.agent }}</td>
                 <td>
-                    <div class="speech-bubble">{{ dialogue.text }}</div>
+                    <!-- Assign different colors based on the serial number to distinguish dialogues -->
+                    <div class="speech-bubble color-{{ forloop.counter|divisibleby:4|add:1 }}">{{ dialogue.text }}</div>
                 </td>
                 <td>{{ dialogue.named_entities }}</td>
             </tr>

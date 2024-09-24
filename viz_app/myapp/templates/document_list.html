@@ -1,28 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Documents</title>
+    <meta charset="UTF-8">
+    <title>Document List</title>
 </head>
 <body>
     <h1>Uploaded Documents</h1>
-    <table>
+    <table border="1">
         <thead>
             <tr>
+                <th>Document ID</th>
                 <th>Document Name</th>
-                <th>Date Uploaded</th>
-                <th>View</th>
+                <th>Conversation Link</th>
             </tr>
         </thead>
         <tbody>
             {% for document in documents %}
             <tr>
+                <td>{{ document.id }}</td>
                 <td>{{ document.name }}</td>
-                <td>{{ document.date_uploaded }}</td>
-                <td><a href="{% url 'conversation_list' document.id %}">View Conversation</a></td>
+                <td>
+                    <!-- Link to conversation page for this document -->
+                    <a href="{% url 'convo_list' document.id %}">View Conversations</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <a href="{% url 'upload_document' %}">Upload New Document</a>
+    <br>
+    <a href="{% url 'upload' %}">Upload a New Document</a>
 </body>
 </html>
