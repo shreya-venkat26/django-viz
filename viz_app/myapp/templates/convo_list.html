@@ -6,11 +6,13 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
         th, td {
             border: 1px solid #dddddd;
             text-align: left;
             padding: 8px;
+            vertical-align: top;
         }
         tr:nth-child(even) {
             background-color: #f2f2f2;
@@ -19,14 +21,19 @@
             padding: 10px;
             border-radius: 10px;
             background-color: #f0f0f0;
-            display: inline-block;
-            width: 80%;
+            display: block;
+            width: 90%;
             word-wrap: break-word;
+            white-space: pre-wrap; /* Preserve newlines */
         }
         .color-1 { background-color: #cfe2f3; }
         .color-2 { background-color: #f4cccc; }
-        .color-3 { background-color: #d9ead3; }
-        .color-4 { background-color: #fff2cc; }
+        .color-3 { background-color: #cbe8c1; }
+        .color-4 { background-color: #c5b279; }
+        .color-5 { background-color: #cfe2f3; }
+        .color-6 { background-color: #f4cccc; }
+        .color-7 { background-color: #cbe8c1; }
+        .color-8 { background-color: #c5b279; }
 
         .back-button {
             display: inline-block;
@@ -36,26 +43,41 @@
             text-align: center;
             text-decoration: none;
             color: #fff;
-            background-color: #007bff; /* Bootstrap-like blue color */
+            background-color: #466f9a;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
         .back-button:hover {
-            background-color: #0056b3; /* Darker blue on hover */
+            background-color: #2268b2;
+        }
+        .bold {
+            font-weight: bold;
         }
     </style>
+    <script>
+        function formatDialogueText() {
+            var speechBubbles = document.getElementsByClassName('speech-bubble');
+            for (var i = 0; i < speechBubbles.length; i++) {
+                var content = speechBubbles[i].innerHTML;
+                // replace **text** with <strong>text</strong>
+                content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                speechBubbles[i].innerHTML = content;
+            }
+        }
+        window.onload = formatDialogueText; // apply the formatting after the page loads
+    </script>
 </head>
 <body>
     <h2>Conversation List for "{{ document.name }}"</h2>
-    <table>
+    <table style="table-layout: fixed; width: 100%;">
         <thead>
             <tr>
-                <th>Speech Number</th>
-                <th>Agent</th>
-                <th>Dialogue</th>
-                <th>Proper Nouns</th>
+                <th style="width: 5%;">Speech Number</th>
+                <th style="width: 15%;">Agent</th>
+                <th style="width: 60%;">Dialogue</th>
+                <th style="width: 20%;">Proper Nouns</th>
             </tr>
         </thead>
         <tbody>
@@ -64,8 +86,8 @@
                 <td>{{ dialogue.serial_number }}</td>
                 <td>{{ dialogue.agent }}</td>
                 <td>
-                    <!-- Assign different colors based on the serial number to distinguish dialogues -->
-                    <div class="speech-bubble color-{{ forloop.counter|divisibleby:4|add:1 }}">{{ dialogue.text }}</div>
+                    <!-- assign different colors based on the serial number to distinguish dialogues -->
+                    <div class="speech-bubble color-{{ forloop.counter }}">{{ dialogue.text }}</div>
                 </td>
                 <td>{{ dialogue.named_entities }}</td>
             </tr>

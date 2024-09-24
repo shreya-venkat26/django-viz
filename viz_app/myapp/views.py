@@ -9,6 +9,8 @@ def process_document(file, document):
     
     sections = re.split(r'[-]{4,}', content)
     print(f"Total sections found: {len(sections)}")
+
+    count = 0
     
     for section_idx, section in enumerate(sections):
         section = section.strip()
@@ -27,27 +29,27 @@ def process_document(file, document):
             if not dialogue:
                 continue
             
-            # Format 1: 'Next speaker: Hypothesizer'
-            # Format 2: 'Hypothesizer (to chat_manager):'
-            speaker_match = re.search(r"^(?:Next speaker:\s*)?([\w\s]+)(?:\s*\(.*\))?:", dialogue, flags=re.IGNORECASE)
+            # format: 'Hypothesizer (to chat_manager):'
+            speaker_match = re.match(r"^([\w\s]+)\s*\(.*\):", dialogue)
             if speaker_match:
+                count = count + 1
                 speaker = speaker_match.group(1).strip()
                 dialogue_text = dialogue[len(speaker_match.group(0)):].strip()
                 proper_nouns = extract_proper_nouns(dialogue_text)
                 
-                # Create a Dialogue entry in the database
+                # create a dialogue entry in the database
                 Dialogue.objects.create(
                     document=document,
                     agent=speaker,
                     text=dialogue_text,
                     named_entities=", ".join(proper_nouns),
-                    serial_number=idx + 1
+                    serial_number=count
                 )
-                print(f"Dialogue added: Speaker: {speaker}, Text: {dialogue_text[:30]}...")
+                print(f"Dialogue added: Speaker: {speaker}, Serial Number: {count}, Text: {dialogue_text[:30]}...")
 
-# Helper function to extract proper nouns
+# helper function to extract proper nouns
 def extract_proper_nouns(text):
-    return re.findall(r'\b[A-Z][a-zA-Z]*\b', text)
+    return [word for word in re.findall(r'\b[A-Z][a-zA-Z]*\b', text) if word != 'The' and word != 'This' and word != 'It']
 
 
 def upload_document(request):
