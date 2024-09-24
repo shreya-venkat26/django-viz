@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Document List</title>
+    <style>
+        form {
+            display: inline;
+        }
+    </style>
 </head>
 <body>
     <h1>Uploaded Documents</h1>
@@ -12,6 +17,7 @@
                 <th>Document ID</th>
                 <th>Document Name</th>
                 <th>Conversation Link</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -19,9 +25,13 @@
             <tr>
                 <td>{{ document.id }}</td>
                 <td>{{ document.name }}</td>
+                <td><a href="{% url 'convo_list' document.id %}">View Conversations</a></td>
                 <td>
-                    <!-- Link to conversation page for this document -->
-                    <a href="{% url 'convo_list' document.id %}">View Conversations</a>
+                    <!-- Delete button -->
+                    <form action="{% url 'delete_document' document.id %}" method="post" onsubmit="return confirm('Are you sure you want to delete this document?');">
+                        {% csrf_token %}
+                        <button type="submit">Delete</button>
+                    </form>
                 </td>
             </tr>
             {% endfor %}

@@ -27,6 +27,24 @@
         .color-2 { background-color: #f4cccc; }
         .color-3 { background-color: #d9ead3; }
         .color-4 { background-color: #fff2cc; }
+
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff; /* Bootstrap-like blue color */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
     </style>
 </head>
 <body>
@@ -54,6 +72,6 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href="{% url 'document_list' %}">Back to Documents</a>
+    <a href="{% url 'document_list' %}" class="back-button">Back to Documents</a>
 </body>
 </html>
