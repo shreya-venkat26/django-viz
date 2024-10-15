@@ -62,7 +62,7 @@ def upload_document(request):
             document = Document.objects.create(name=document_name)
 
             process_document(document_file, document)
-            return redirect('convo_list', document_id=document.id)
+            return render(request, 'upload_success.html', {'document': document})
     else:
         form = DocumentUploadForm()
 
@@ -79,7 +79,43 @@ def conversation_list(request, document_id):
     dialogues = document.dialogues.order_by('serial_number')
     return render(request, 'convo_list.html', {'document': document, 'dialogues': dialogues})
 
+
 def delete_document(request, document_id):
     document = get_object_or_404(Document, id=document_id)
     document.delete()
     return redirect('document_list')
+
+
+def rename_document(request, document_id):
+    if request.method == 'POST':
+        new_name = request.POST.get('new_name').strip()
+        if new_name:
+            document = get_object_or_404(Document, id=document_id)
+            document.name = new_name
+            document.save()
+        return redirect('document_list')
+
+
+def document_analysis(request, document_id):
+    document = get_object_or_404(Document, id=document_id)
+    dialogues = document.dialogues.order_by('serial_number')
+
+    # Optional: handle search phrase highlight
+    search_term = request.GET.get('search', '').strip().lower()  # Get search term from user
+    highlighted_dialogues = []
+
+    if search_term:
+        # Highlight the search term if present
+        for dialogue in dialogues:
+            highlighted_text = dialogue.text
+            if search_term in dialogue.text.lower():
+                highlighted_text = dialogue.text.replace(search_term, f'<span class="highlight">{search_term}</span>', flags=re.IGNORECASE)
+            highlighted_dialogues.append({
+                'agent': dialogue.agent,
+                'text': highlighted_text,
+                'named_entities': dialogue.named_entities
+            })
+    else:
+        highlighted_dialogues = [{'agent': d.agent, 'text': d.text, 'named_entities': d.named_entities} for d in dialogues]
+
+    return render(request, 'document_analysis.html', {'document': document, 'dialogues': highlighted_dialogues, 'search_term': search_term})
