@@ -100,12 +100,10 @@ def document_analysis(request, document_id):
     document = get_object_or_404(Document, id=document_id)
     dialogues = document.dialogues.order_by('serial_number')
 
-    # Optional: handle search phrase highlight
-    search_term = request.GET.get('search', '').strip().lower()  # Get search term from user
+    search_term = request.GET.get('search', '').strip().lower()
     highlighted_dialogues = []
 
     if search_term:
-        # Highlight the search term if present
         for dialogue in dialogues:
             highlighted_text = dialogue.text
             if search_term in dialogue.text.lower():

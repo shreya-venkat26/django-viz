@@ -8,20 +8,18 @@
             display: inline;
         }
         .rename-form {
-            display: none;  /* Hide rename form by default */
+            display: none;
         }
     </style>
     <script>
-        // Function to toggle the rename form visibility for a specific document
         function toggleRenameForm(documentId) {
             // Get the rename form by ID
             var form = document.getElementById('rename-form-' + documentId);
 
-            // Check if the form is hidden, then toggle its visibility
             if (form.style.display === 'none' || form.style.display === '') {
-                form.style.display = 'inline';  // Show the form
+                form.style.display = 'inline';
             } else {
-                form.style.display = 'none';    // Hide the form
+                form.style.display = 'none';
             }
         }
     </script>

@@ -98,7 +98,6 @@
     </div>
 
     <script>
-        // Function to highlight the search term dynamically
         function highlightText() {
             // Get the search term
             const searchTerm = document.getElementById("search").value.trim();
@@ -108,20 +107,18 @@
                 return;
             }
 
-            // Get all the dialogue elements
             const dialogueTextElements = document.getElementsByClassName('dialogue-text');
             
-            // Reset any existing highlights
             for (let element of dialogueTextElements) {
-                const originalText = element.innerText;  // Get original text
-                element.innerHTML = originalText;  // Remove any previous highlighting
+                const originalText = element.innerText;
+                element.innerHTML = originalText;
             }
 
-            // Highlight the search term in each dialogue text
+            // Highlight Searching - Case Insensitive
             for (let element of dialogueTextElements) {
                 let text = element.innerHTML;
-                const regex = new RegExp(`(${searchTerm})`, 'gi');  // Create regex for case-insensitive match
-                element.innerHTML = text.replace(regex, '<span class="highlight">$1</span>');  // Add highlight
+                const regex = new RegExp(`(${searchTerm})`, 'gi');
+                element.innerHTML = text.replace(regex, '<span class="highlight">$1</span>');
             }
         }
     </script>
