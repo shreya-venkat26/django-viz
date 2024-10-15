@@ -7,7 +7,24 @@
         form {
             display: inline;
         }
+        .rename-form {
+            display: none;  /* Hide rename form by default */
+        }
     </style>
+    <script>
+        // Function to toggle the rename form visibility for a specific document
+        function toggleRenameForm(documentId) {
+            // Get the rename form by ID
+            var form = document.getElementById('rename-form-' + documentId);
+
+            // Check if the form is hidden, then toggle its visibility
+            if (form.style.display === 'none' || form.style.display === '') {
+                form.style.display = 'inline';  // Show the form
+            } else {
+                form.style.display = 'none';    // Hide the form
+            }
+        }
+    </script>
 </head>
 <body>
     <h1>Uploaded Documents</h1>
@@ -31,6 +48,16 @@
                     <form action="{% url 'delete_document' document.id %}" method="post" onsubmit="return confirm('Are you sure you want to delete this document?');">
                         {% csrf_token %}
                         <button type="submit">Delete</button>
+                    </form>
+
+                    <!-- Rename button to show the form -->
+                    <button type="button" onclick="toggleRenameForm(document.id);">Rename</button>
+
+                    <!-- Rename form (initially hidden) -->
+                    <form id="rename-form-{{ document.id }}" class="rename-form" action="{% url 'rename_document' document.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="text" name="new_name" placeholder="New Name" required>
+                        <button type="submit">Save</button>
                     </form>
                 </td>
             </tr>

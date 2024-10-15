@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Document Analysis - {{ document.name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+        .left-side {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .right-side {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .speech-bubble {
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #f0f0f0;
+            display: block;
+            width: 90%;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+        .search-box {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Side: Document Analysis with Search -->
+        <div class="left-side">
+            <h1>Document Analysis: {{ document.name }}</h1>
+            <div id="dialogue-list">
+                {% for dialogue in dialogues %}
+                <div class="speech-bubble">
+                    <strong>Agent:</strong> {{ dialogue.agent }}<br>
+                    <strong>Text:</strong> <span class="dialogue-text">{{ dialogue.text }}</span><br>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Search box for word/phrase highlighting -->
+            <div class="search-box">
+                <label for="search">Highlight Word/Phrase (max 10 words):</label>
+                <input type="text" id="search" maxlength="50" placeholder="Enter word or phrase...">
+                <button onclick="highlightText()">Highlight</button>
+            </div>
+        </div>
+
+        <!-- Right Side: Comparison Document Upload -->
+        <div class="right-side">
+            <h2>Upload Comparison Document</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" name="comparison_document" accept=".txt,.pdf,.doc,.docx">
+                <button type="submit">Upload Comparison Document</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Function to highlight the search term dynamically
+        function highlightText() {
+            // Get the search term
+            const searchTerm = document.getElementById("search").value.trim();
+
+            if (!searchTerm) {
+                alert("Please enter a word or phrase to highlight.");
+                return;
+            }
+
+            // Get all the dialogue elements
+            const dialogueTextElements = document.getElementsByClassName('dialogue-text');
+            
+            // Reset any existing highlights
+            for (let element of dialogueTextElements) {
+                const originalText = element.innerText;  // Get original text
+                element.innerHTML = originalText;  // Remove any previous highlighting
+            }
+
+            // Highlight the search term in each dialogue text
+            for (let element of dialogueTextElements) {
+                let text = element.innerHTML;
+                const regex = new RegExp(`(${searchTerm})`, 'gi');  // Create regex for case-insensitive match
+                element.innerHTML = text.replace(regex, '<span class="highlight">$1</span>');  // Add highlight
+            }
+        }
+    </script>
+</body>
+</html>
