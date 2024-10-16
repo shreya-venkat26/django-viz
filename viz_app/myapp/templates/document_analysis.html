@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Document Analysis - {{ document.name }}</title>
     <style>
         body {
@@ -11,16 +12,10 @@
         }
         .container {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 40% 60%;  /* Left 40%, Right 60% */
             gap: 20px;
         }
-        .left-side {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .right-side {
+        .left-side, .right-side {
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
@@ -31,7 +26,6 @@
             border-radius: 10px;
             background-color: #f0f0f0;
             display: block;
-            width: 90%;
             word-wrap: break-word;
             white-space: pre-wrap;
         }
@@ -39,36 +33,41 @@
             background-color: yellow;
             font-weight: bold;
         }
-        .search-box {
+        .search-box, .upload-box {
             margin-top: 20px;
-            display: flex;
-            flex-direction: column;
         }
-        input[type="text"] {
+        input[type="text"], input[type="file"], button {
             padding: 10px;
+            margin-top: 10px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
         button {
-            padding: 10px;
-            margin-top: 10px;
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
         }
         button:hover {
             background-color: #0056b3;
         }
+        .output-box {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #e9ecef;
+        }
+        h2, h3 {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Left Side: Document Analysis with Search -->
+        <!-- Left Side: Document Analysis -->
         <div class="left-side">
-            <h1>Document Analysis: {{ document.name }}</h1>
+            <h2>Original Document: {{ document.name }}</h2>
             <div id="dialogue-list">
                 {% for dialogue in dialogues %}
                 <div class="speech-bubble">
@@ -80,41 +79,70 @@
 
             <!-- Search box for word/phrase highlighting -->
             <div class="search-box">
-                <label for="search">Highlight Word/Phrase (max 10 words):</label>
+                <label for="search">Highlight Word/Phrase:</label>
                 <input type="text" id="search" maxlength="50" placeholder="Enter word or phrase...">
                 <button onclick="highlightText()">Highlight</button>
             </div>
         </div>
 
-        <!-- Right Side: Comparison Document Upload -->
+        <!-- Right Side: Comparison Document Upload and Analysis -->
         <div class="right-side">
-            <h2>Upload Comparison Document</h2>
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <input type="file" name="comparison_document" accept=".txt,.pdf,.doc,.docx">
-                <button type="submit">Upload Comparison Document</button>
-            </form>
+            <h2>Comparison Document</h2>
+            
+            <!-- Upload box for comparison document -->
+            <div class="upload-box">
+                <form id="comparison-form" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" name="comparison_document" accept=".txt,.pdf,.doc,.docx" required>
+                    <button type="submit">Upload Comparison Document</button>
+                </form>
+            </div>
+
+            <!-- Display the comparison document if uploaded -->
+            <div id="comparison-document">
+                {% if comparison_dialogues %}
+                <h3>Uploaded Comparison Document</h3>
+                <div id="comparison-dialogue-list">
+                    {% for dialogue in comparison_dialogues %}
+                    <div class="speech-bubble">
+                        <strong>Agent:</strong> {{ dialogue.agent }}<br>
+                        <strong>Text:</strong> <span class="dialogue-text">{{ dialogue.text }}</span><br>
+                        <strong>Named Entities:</strong> {{ dialogue.named_entities }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Display the Autogen output -->
+            <div class="output-box">
+                <h3>Autogen Group Analysis Output</h3>
+                <div id="autogen-output">
+                    {% if autogen_output %}
+                    <p>{{ autogen_output }}</p>
+                    {% else %}
+                    <p>No analysis output available yet.</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
+        // Function to highlight the search term dynamically
         function highlightText() {
-            // Get the search term
             const searchTerm = document.getElementById("search").value.trim();
-
             if (!searchTerm) {
                 alert("Please enter a word or phrase to highlight.");
                 return;
             }
 
             const dialogueTextElements = document.getElementsByClassName('dialogue-text');
-            
             for (let element of dialogueTextElements) {
                 const originalText = element.innerText;
                 element.innerHTML = originalText;
             }
 
-            // Highlight Searching - Case Insensitive
             for (let element of dialogueTextElements) {
                 let text = element.innerHTML;
                 const regex = new RegExp(`(${searchTerm})`, 'gi');
